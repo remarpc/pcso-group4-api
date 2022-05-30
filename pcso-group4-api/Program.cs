@@ -1,9 +1,16 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.SignalR;
+using System.ComponentModel.DataAnnotations;
+
+
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddDbContext<GameDb>(opt => opt.UseInMemoryDatabase("GameList"));
+builder.Services.AddDbContext<GameDb>(options =>
+{
+    options.UseSqlServer(builder.Configuration.GetConnectionString("Group4DbAzure"));
+});
+
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 
@@ -18,8 +25,9 @@ app.UseSwaggerUI();
 app.UseHttpsRedirection();
 
 
-
 app.MapGet("/", () => "Hello World!");
+
+#region Games CRUD
 
 app.MapGet("/gameitems", async (GameDb db) =>
     await db.Games.ToListAsync());
@@ -39,12 +47,12 @@ app.MapPut("/gameitems/{id}", async (int id, Game inputGame, GameDb db) =>
     if (game is null) return Results.NotFound();
 
     game.GameID = inputGame.GameID;
-    game.Digit1 = inputGame.Digit1;
-    game.Digit2 = inputGame.Digit2;
-    game.Digit3 = inputGame.Digit3;
-    game.Digit4 = inputGame.Digit4;
-    game.Digit5 = inputGame.Digit5;
-    game.Digit6 = inputGame.Digit6;
+    //game.Digit1 = inputGame.Digit1;
+    //game.Digit2 = inputGame.Digit2;
+    //game.Digit3 = inputGame.Digit3;
+    //game.Digit4 = inputGame.Digit4;
+    //game.Digit5 = inputGame.Digit5;
+    //game.Digit6 = inputGame.Digit6;
 
     await db.SaveChangesAsync();
 
@@ -62,16 +70,76 @@ app.MapDelete("/gameitems/{id}", async (int id, GameDb db) =>
     return Results.NotFound();
 });
 
-app.MapDelete("/gameitems", async (GameDb db) =>
+#endregion
+
+
+
+#region Combination CRUD
+
+app.MapGet("/combinationitems", async (GameDb db) =>
+    await db.Combinations.ToListAsync());
+
+app.MapPost("/combinationitems", async (Combination combination, GameDb db) =>
 {
-    await db.Database.EnsureDeletedAsync();
+    db.Combinations.Add(combination);
     await db.SaveChangesAsync();
-    return Results.Ok(null);
+
+    return Results.Created($"/combinationitems/{combination.GameID}", combination);
 });
+
+app.MapPut("/combinationitems/{id}", async (int id, Combination combinationinput, GameDb db) =>
+{
+    var combination = await db.Combinations.FindAsync(id);
+
+    if (combination is null) return Results.NotFound();
+
+    combination.GameID = combinationinput.GameID;
+    combination.Digit1 = combinationinput.Digit1;
+    combination.Digit2 = combinationinput.Digit2;
+    combination.Digit3 = combinationinput.Digit3;
+    combination.Digit4 = combinationinput.Digit4;
+    combination.Digit5 = combinationinput.Digit5;
+    combination.Digit6 = combinationinput.Digit6;
+
+    await db.SaveChangesAsync();
+
+    return Results.NoContent();
+});
+
+app.MapDelete("/combinationitems/{id}", async (int id, GameDb db) =>
+{
+    if (await db.Combinations.FindAsync(id) is Combination combination)
+    {
+        db.Combinations.Remove(combination);
+        await db.SaveChangesAsync();
+        return Results.Ok(combination);
+    }
+    return Results.NotFound();
+});
+
+
+#endregion
+
 
 app.Run();
 
+
+class GameDb : DbContext
+{
+    public GameDb(DbContextOptions<GameDb> options)
+        : base(options) { }
+
+    public DbSet<Game> Games { get; set; }
+    public DbSet<Combination> Combinations { get; set; }
+
+}
 class Game
+{
+    public int Id { get; set; }
+    public int GameID { get; set; }    
+}
+
+class Combination
 {
     public int Id { get; set; }
     public int GameID { get; set; }
@@ -80,14 +148,6 @@ class Game
     public int Digit3 { get; set; }
     public int Digit4 { get; set; }
     public int Digit5 { get; set; }
-    public int Digit6 { get; set; }
-}
-
-class GameDb : DbContext
-{
-    public GameDb(DbContextOptions<GameDb> options)
-        : base(options) { }
-
-    public DbSet<Game> Games => Set<Game>();
+    public int Digit6 { get; set; }  
 }
 
