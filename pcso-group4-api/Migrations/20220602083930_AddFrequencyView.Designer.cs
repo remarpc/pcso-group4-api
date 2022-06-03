@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -9,9 +10,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace pcso_group4_api.Migrations
 {
     [DbContext(typeof(GameDb))]
-    partial class GameDbModelSnapshot : ModelSnapshot
+    [Migration("20220602083930_AddFrequencyView")]
+    partial class AddFrequencyView
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -52,40 +54,6 @@ namespace pcso_group4_api.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Combinations");
-                });
-
-            modelBuilder.Entity("FrequencyView", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"), 1L, 1);
-
-                    b.Property<int>("Digit1")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Digit2")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Digit3")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Digit4")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Digit5")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Digit6")
-                        .HasColumnType("int");
-
-                    b.Property<int>("GameID")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("FrequencyViews");
                 });
 
             modelBuilder.Entity("Game", b =>

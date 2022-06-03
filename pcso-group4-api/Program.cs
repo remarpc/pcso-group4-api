@@ -2,8 +2,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.SignalR;
 using System.ComponentModel.DataAnnotations;
 
-
-
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<GameDb>(options =>
@@ -24,8 +22,8 @@ app.UseSwagger();
 app.UseSwaggerUI();
 app.UseHttpsRedirection();
 
-
 app.MapGet("/", () => "Hello World!");
+
 
 #region Games CRUD
 
@@ -79,6 +77,7 @@ app.MapDelete("/gameitems/{id}", async (int id, GameDb db) =>
 app.MapGet("/combinationitems", async (GameDb db) =>
     await db.Combinations.ToListAsync());
 
+
 app.MapPost("/combinationitems", async (Combination combination, GameDb db) =>
 {
     db.Combinations.Add(combination);
@@ -120,6 +119,14 @@ app.MapDelete("/combinationitems/{id}", async (int id, GameDb db) =>
 
 #endregion
 
+#region Frequency
+
+app.MapGet("/frequencyviewitems", async (GameDb db) =>
+
+    await db.Combinations.FromSqlRaw("Select * FROM FrequencyViews").ToListAsync());  
+
+#endregion
+
 
 app.Run();
 
@@ -130,13 +137,13 @@ class GameDb : DbContext
         : base(options) { }
 
     public DbSet<Game> Games { get; set; }
-    public DbSet<Combination> Combinations { get; set; }
-
+    public DbSet<Combination> Combinations { get; set; }       
+    
 }
 class Game
 {
     public int Id { get; set; }
-    public int GameID { get; set; }    
+    public int GameID { get; set; }
 }
 
 class Combination
@@ -148,6 +155,6 @@ class Combination
     public int Digit3 { get; set; }
     public int Digit4 { get; set; }
     public int Digit5 { get; set; }
-    public int Digit6 { get; set; }  
+    public int Digit6 { get; set; }
 }
 

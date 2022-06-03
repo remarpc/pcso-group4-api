@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -9,9 +10,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace pcso_group4_api.Migrations
 {
     [DbContext(typeof(GameDb))]
-    partial class GameDbModelSnapshot : ModelSnapshot
+    [Migration("20220602120653_UpdateDatabaseView")]
+    partial class UpdateDatabaseView
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -54,13 +56,13 @@ namespace pcso_group4_api.Migrations
                     b.ToTable("Combinations");
                 });
 
-            modelBuilder.Entity("FrequencyView", b =>
+            modelBuilder.Entity("Frequency", b =>
                 {
-                    b.Property<long>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
+                        .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<int>("Digit1")
                         .HasColumnType("int");
@@ -85,7 +87,7 @@ namespace pcso_group4_api.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("FrequencyViews");
+                    b.ToTable("Frequencies");
                 });
 
             modelBuilder.Entity("Game", b =>
